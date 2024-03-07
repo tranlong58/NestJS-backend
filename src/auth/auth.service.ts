@@ -3,14 +3,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import * as process from 'process';
+
 @Injectable()
 export class AuthService {
   constructor(
     private prismaService: PrismaService,
     private jwtService: JwtService,
   ) {}
+
   async register(data: any) {
     const hashedPassword = await argon.hash(data['password']);
+
     try {
       const user = await this.prismaService.user.create({
         data: {
