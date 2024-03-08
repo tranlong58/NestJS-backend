@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import * as process from 'process';
+import { LoginDto, RegisterDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -11,16 +12,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(data: any) {
-    const hashedPassword = await argon.hash(data['password']);
+  async register(data: RegisterDto) {
+    const hashedPassword = await argon.hash(data.password);
 
     try {
       const user = await this.prismaService.user.create({
         data: {
-          email: data['email'],
+          email: data.email,
           hashedPassword,
-          firstName: data['firstName'],
-          lastName: data['lastName'],
+          firstName: data.firstName,
+          lastName: data.lastName,
         },
         select: {
           id: true,
@@ -42,9 +43,9 @@ export class AuthService {
     }
   }
 
-  async login(data: any) {
+  async login(data: LoginDto) {
     const user = await this.prismaService.user.findUnique({
-      where: { email: data['email'] },
+      where: { email: data.email },
     });
 
     if (!user) {
@@ -53,7 +54,7 @@ export class AuthService {
 
     const isCorrectPassword = await argon.verify(
       user.hashedPassword,
-      data['password'],
+      data.password,
     );
 
     if (!isCorrectPassword) {

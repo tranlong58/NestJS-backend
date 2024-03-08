@@ -1,16 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateNoteDto, UpdateNoteDto } from './dto';
 
 @Injectable()
 export class NoteService {
   constructor(private prismaService: PrismaService) {}
 
-  async createNote(data: any, currentUserId: number) {
+  async createNote(data: CreateNoteDto, currentUserId: number) {
     const note = await this.prismaService.note.create({
       data: {
-        title: data['title'],
-        description: data['description'],
-        url: data['url'],
+        title: data.title,
+        description: data.description,
+        url: data.url,
         userId: currentUserId,
       },
     });
@@ -47,7 +48,11 @@ export class NoteService {
     };
   }
 
-  async updateNoteById(noteId: number, data: any, currentUserId: number) {
+  async updateNoteById(
+    noteId: number,
+    data: UpdateNoteDto,
+    currentUserId: number,
+  ) {
     const note = await this.prismaService.note.findUnique({
       where: {
         id: noteId,
@@ -62,12 +67,30 @@ export class NoteService {
       throw new BadRequestException('cannot update the note of other user');
     }
 
+    const updatedNoteData: {
+      title?: string;
+      description?: string;
+      url?: string;
+    } = {};
+
+    if (data.title) {
+      updatedNoteData.title = data.title;
+    }
+
+    if (data.description) {
+      updatedNoteData.description = data.description;
+    }
+
+    if (data.url) {
+      updatedNoteData.url = data.url;
+    }
+
     const updatedNote = await this.prismaService.note.update({
       where: {
         id: noteId,
       },
       data: {
-        ...data,
+        ...updatedNoteData,
       },
     });
 
