@@ -33,7 +33,7 @@ export class AuthService {
       });
 
       return {
-        message: 'user register',
+        message: 'register success',
         data: user,
       };
     } catch (error) {
@@ -64,7 +64,7 @@ export class AuthService {
     delete user.hashedPassword;
 
     return {
-      message: 'user login',
+      message: 'login success',
       accessToken: await this.convertToJwtString(user.id, user.email),
       data: user,
     };

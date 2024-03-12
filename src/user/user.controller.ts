@@ -14,11 +14,18 @@ import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth, ApiBody
-} from "@nestjs/swagger";
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { UpdateUserDto } from './dto';
-import { LoginDto } from "../auth/dto";
+import {
+  DeleteUserByIdResponseDto,
+  GetAllUserResponseDto,
+  GetProfileResponseDto,
+  GetUserByIdResponseDto,
+  UpdateUserByIdResponseDto,
+  UpdateUserDto,
+} from './dto';
 
 @Controller('user')
 @ApiTags('User')
@@ -29,7 +36,11 @@ export class UserController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Get user profile' })
-  @ApiResponse({ status: 200, description: 'Return user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return user profile',
+    type: GetProfileResponseDto,
+  })
   profile(@Req() request: Request) {
     return {
       message: 'get user profile',
@@ -39,21 +50,33 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all users',
+    type: GetAllUserResponseDto,
+  })
   getAllUser() {
     return this.userService.getAllUser();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
-  @ApiResponse({ status: 200, description: 'Return user by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return user by ID',
+    type: GetUserByIdResponseDto,
+  })
   getUserById(@Param('id') id: string) {
     return this.userService.getUserById(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update user by ID' })
-  @ApiResponse({ status: 200, description: 'Return updated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return updated user',
+    type: UpdateUserByIdResponseDto,
+  })
   @ApiBody({ type: UpdateUserDto })
   updateUserById(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.userService.updateUserById(+id, body);
@@ -61,7 +84,11 @@ export class UserController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by ID' })
-  @ApiResponse({ status: 200, description: 'Return deleted user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return deleted user',
+    type: DeleteUserByIdResponseDto,
+  })
   deleteUserById(@Param('id') id: string, @Req() request: Request) {
     return this.userService.deleteUserById(+id, request.user['id']);
   }
